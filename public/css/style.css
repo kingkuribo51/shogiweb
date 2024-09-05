@@ -1,0 +1,75 @@
+body {
+    font-family:'メイリオ';
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+table {
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#board td {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #333;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 24px;
+    background-color: rgb(219, 163, 78);
+}
+
+#board td a{
+    width: 40px;
+    height: 40px;
+    display: block;
+    text-decoration: none;
+    color: black;
+}
+
+#player1 {
+    transform: rotate(180deg);
+}
+
+#game-container {
+    display: flex;
+    flex-direction: row; /* 横方向に並べる */
+    align-items: center;
+}
+
+#coughtpieces {
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 20px; /* 将棋盤との間隔を設定 */
+}
+
+#coughtpieces a {
+    width: 20px;
+    height: 20px;
+    display: block;
+    text-decoration: none;
+    color: black;
+}
+
+#coughtpieces td {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #333;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 15px;
+    background-color: rgb(219, 163, 78);
+}
+
+.selected {
+    background-color: aqua;
+}
+
+.possible {
+    background-color: red;
+}

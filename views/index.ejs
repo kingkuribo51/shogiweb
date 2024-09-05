@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>将棋盤</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- CSSをリンク -->
+    <script src="/socket.io/socket.io.js"></script><!--socket.io読み込み-->
+</head>
+<body>
+<h1>将棋オンライン</h1>
+ <div id="game-container">
+ <table id="coughtpieces">
+     <% for(let or = 0; or < 4; or++) { %>
+            <tr>
+                <% for(let oc = 0; oc < 5; oc++) { %>
+                    <td>
+                    <a id="player1" class="opponentpieces" data-opponentid="<%=5*or+oc%>" href="#" onclick ="sasu(<%=5*or+oc%>, <%=1%>)"></a>
+                    </td>
+                <% } %>
+            </tr>
+        <% } %>
+    </table>
+
+    <table id="board">
+        <!-- 将棋盤のマスをここに描画 -->
+         <% for(let i = 0; i < 9; i++) { %>
+            <tr>
+                <% for(let j = 0; j < 9; j++) { %>
+                    <td >
+                    <a data-row="<%= i %>" data-col="<%= j %>" href="#" onclick="piececlick(<%= i%>,<%= j %>)"></a>
+                    </td>
+                <% } %>
+            </tr>
+        <% } %>
+    </table>
+
+    <table id="coughtpieces">
+        <% for(let mr = 0; mr < 4; mr++) { %>
+            <tr>
+                <% for(let mc = 0; mc < 5; mc++) { %>
+                    <td>
+                    <a id="player0" class="mypieces" data-myid="<%=5*mr+mc%>" href="#" onclick ="sasu(<%=5*mr+mc%>, <%=0%>)"></a>
+                    </td>
+                <% } %>
+            </tr>
+        <% } %>
+        </table>
+    <script src="client3.js"></script> <!-- JavaScriptをリンク -->
+</body>
+</html>
