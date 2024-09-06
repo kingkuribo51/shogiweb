@@ -40,6 +40,10 @@ socket.on('start', () => {
     gamereset();
 });
 
+socket.on('rere', () =>{
+    alert("相手が切断しました");
+});
+
 socket.on('playnumber', (playnumber) => {
     console.log("receve");
     management = playnumber;

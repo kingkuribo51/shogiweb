@@ -45,6 +45,7 @@ socket.on('pieces', (data) => {
     // ユーザーが切断した場合
     socket.on('disconnect', () => {
         console.log('ユーザーが切断しました');
+        io.emit('rere');
         players = players.filter((playerSocket) => playerSocket.id !== socket.id);
     });
 });
