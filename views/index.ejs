@@ -28,7 +28,7 @@
             <tr>
                 <% for(let j = 0; j < 9; j++) { %>
                     <td >
-                    <a data-row="<%= i %>" data-col="<%= j %>" href="#" onclick="piececlick(<%= i%>,<%= j %>)"></a>
+                    <a class="boardpieces" data-row="<%= i %>" data-col="<%= j %>" href="#" onclick="piececlick(<%= i%>,<%= j %>)"></a>
                     </td>
                 <% } %>
             </tr>

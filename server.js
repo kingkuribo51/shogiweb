@@ -19,24 +19,33 @@ app.get('/', (req, res) => {
     res.render('index.ejs');
 });
 
+let players = [];
+let turn = 0;
+
 // Socket.IOの接続処理
 io.on('connection', (socket) => {
     console.log('ユーザーが接続しました');
+    players.push(socket);
+    if(players.length ==2) {
+        io.emit('start');
+        players[turn].emit('turn');
+        players[0].emit('playnumber', 0);
+        players[1].emit('playnumber', 1);
+    }
 
-    // ゲームの開始
-    socket.on('startGame', (roomId) => {
-        socket.join(roomId);
-        io.to(roomId).emit('gameStarted');
-    });
+     // 駒の移動
+socket.on('pieces', (data) => {
+    io.emit('receve', (data));
+    turn = (turn + 1) % 2;
+    players[turn].emit('turn');
+    players[(turn + 1) % 2].emit('notturn');
+});
 
-    // 駒の移動
-    socket.on('movePiece', (data) => {
-        io.to(data.roomId).emit('pieceMoved', data);
-    });
 
     // ユーザーが切断した場合
     socket.on('disconnect', () => {
         console.log('ユーザーが切断しました');
+        players = players.filter((playerSocket) => playerSocket.id !== socket.id);
     });
 });
 

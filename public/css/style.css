@@ -73,3 +73,11 @@ table {
 .possible {
     background-color: red;
 }
+
+#player0 {
+    pointer-events: none;
+}
+
+#player1 {
+    pointer-events: none;
+}
