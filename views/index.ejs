@@ -8,7 +8,7 @@
     <script src="/socket.io/socket.io.js"></script><!--socket.io読み込み-->
 </head>
 <body>
-<h1>将棋オンライン</h1>
+<h1>ブラジー将棋</h1>
  <div id="game-container">
  <table id="coughtpieces">
      <% for(let or = 0; or < 4; or++) { %>
@@ -46,6 +46,10 @@
             </tr>
         <% } %>
         </table>
+        </div>
+        <button class="button"  onclick="matta()">待った</button>
+        <button class="button"  onclick="boardswitch()">盤面交代</button>
+        <button class="button"  onclick="turnswitch()">ターン交代</button>
     <script src="client3.js"></script> <!-- JavaScriptをリンク -->
 </body>
 </html>

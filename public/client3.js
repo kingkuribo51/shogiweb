@@ -12,9 +12,10 @@ let turn;
 let pieces = [];
 let mypieces = [];
 let opponent_pieces = [];
-//盤面の駒
+let connect;
 function gamereset() {
     first = 0;
+
 pieces = [
     ['香', '桂', '銀', '金', '王', '金', '銀', '桂', '香'],
     ['', '飛', '', '', '', '', '', '角', ''],
@@ -66,6 +67,7 @@ socket.on('turn', () => {
     links.forEach(link => {
         link.style.pointerEvents = "auto";
     });
+    alert("あなターンです");
 });
 
 socket.on('notturn', () => {
@@ -76,11 +78,12 @@ socket.on('notturn', () => {
 });
 
 socket.on('receve', (data) => {
-
+    console.log("receve");
+    
     pieces = data.pieces;
     mypieces = data.mine;
     opponent_pieces = data.yours;
-    let recognaze=0;
+    let recognaze = 0;
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
             const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
@@ -96,8 +99,10 @@ socket.on('receve', (data) => {
         const cell = document.querySelector(`[data-myid="${i}"]`);
         cell.id=data.myId[i];
     }
+
     piecerender();
     mypiecesrender();
+    
 });
 
 socket.on('disconnected', () => {
@@ -105,7 +110,26 @@ socket.on('disconnected', () => {
     location.reload();
 });
 
+socket.on('haveC', (data) => {
+    let send = confirm(`${data.name}を変更しますか？`);
+    if(send == true && data.function == 'boardswitch') {
+        socket.emit('switchB', ('yes'));
+    } else if(send == false && data.function == 'boardswitch') {
+        socket.emit('switchB', ('cancel'));
+    }else if(send == true && data.function == 'turnswitch') {
+            socket.emit('switchT', ('yes'));
+    } else if(send == false && data.function == 'turnswitch') {
+        socket.emit('switchT', ('cancel'));
+    }
+});
 
+function boardswitch() {
+    socket.emit('boardswitch', ("盤面"));
+}
+
+function turnswitch() {
+    socket.emit('turnswitch', ("ターン"));
+}
 
 //駒を描画する
 function piecerender() {
@@ -152,6 +176,8 @@ function piececlick(row,col) {
         selectid=player;
         selectrow = row;
         selectcol = col;
+
+        
         
 
         checkmoving(row, col, cell.textContent, cell.id);
@@ -162,9 +188,9 @@ function piececlick(row,col) {
 
         //選択状態の時移動先のマスを選ぶ
     } else if (condition ==1) {
-        //同じ陣地の駒が選択されたら選択状態をキャンセル
-        if(cell.id == selectid) {
 
+        //同じ陣地の駒が選択されたら選択状態をキャンセル
+        if(cell.id == selectid ) {
             //condition0へ
             conditionswitchTo0();
             return;
@@ -183,6 +209,19 @@ function piececlick(row,col) {
 
         //指す駒を選択しているときに空白を押すと指す
     } else if(condition == 2 && pieces[row][col] == "") {
+         //2歩検索
+         let nihucount = 0;
+         let nihu = document.querySelectorAll(`[data-col="${col}"]`);
+         for(let i = 0; i<9; i++) {
+             if(selectid == nihu[i].id && pieces[i][col] == "歩") {
+                 nihucount++;
+         }
+         
+        }
+         if(nihucount == 1) {
+            conditionswitchTo0();
+            return;
+         }
 
         //指し駒を指す関数へ移動
         sasimove(row, col);
@@ -194,6 +233,10 @@ function piececlick(row,col) {
 
 //駒を動かす
 function movepiece(moverow, movecol) {
+    //待った用に前の状態を保存
+   
+    
+
     //駒情報を取得
     const newcell = document.querySelector(`[data-row="${moverow}"][data-col="${movecol}"]`);
     const oldcell = document.querySelector(`[data-row="${selectrow}"][data-col="${selectcol}"]`);
@@ -207,37 +250,105 @@ function movepiece(moverow, movecol) {
     //座標を受け渡し
     pieces[moverow][movecol] = pieces[selectrow][selectcol];
     pieces[selectrow][selectcol] = "";
-
+    
     if(newcell.id == 'player0' && moverow <3 && pieces[moverow][movecol] == "歩") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "と";
+        }
     } else if(newcell.id == 'player0' && moverow <3 && pieces[moverow][movecol] == "銀") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "全";
+        }
     } else if(newcell.id == 'player0' && moverow <3 && pieces[moverow][movecol] == "香") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "杏";
+        }
     } else if(newcell.id == 'player0' && moverow <3 && pieces[moverow][movecol] == "桂") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "圭";
+        }
     } else if(newcell.id == 'player0' && moverow <3 && pieces[moverow][movecol] == "角") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "馬";
+        }
     } else if(newcell.id == 'player0' && moverow <3 && pieces[moverow][movecol] == "飛") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "龍";
-    } else if(newcell.id == 'player0' && moverow <3 && pieces[moverow][movecol] == "歩") {
+        }
+    } else if(newcell.id == 'player0' && selectrow <3 && pieces[moverow][movecol] == "歩") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "と";
-    } 
-    if(newcell.id == 'player1' && moverow > 5 && pieces[moverow][movecol] == "歩") {
-        pieces[moverow][movecol] = "と";
-    } else if(newcell.id == 'player1' && moverow >5 && pieces[moverow][movecol] == "銀") {
+        }
+    } else if(newcell.id == 'player0' && selectrow <3 && pieces[moverow][movecol] == "銀") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "全";
-    } else if(newcell.id == 'player1' && moverow >5 && pieces[moverow][movecol] == "香") {
+        }
+    } else if(newcell.id == 'player0' && selectrow <3 && pieces[moverow][movecol] == "香") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "杏";
-    } else if(newcell.id == 'player1' && moverow >5 && pieces[moverow][movecol] == "桂") {
+        }
+    } else if(newcell.id == 'player0' && selectrow <3 && pieces[moverow][movecol] == "桂") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "圭";
-    } else if(newcell.id == 'player1' && moverow >5 && pieces[moverow][movecol] == "角") {
+        }
+    } else if(newcell.id == 'player0' && selectrow <3 && pieces[moverow][movecol] == "角") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "馬";
-    } else if(newcell.id == 'player1' && moverow >5 && pieces[moverow][movecol] == "飛") {
+        }
+    } else if(newcell.id == 'player0' && selectrow <3 && pieces[moverow][movecol] == "飛") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "龍";
-    } else if(newcell.id == 'player1' && moverow >5 && pieces[moverow][movecol] == "歩") {
+        }
+    }
+    if(newcell.id == 'player1' && moverow > 5 && pieces[moverow][movecol] == "歩") {
+        if(confirm("成りますか?") == true) {
         pieces[moverow][movecol] = "と";
-    } 
+        }
+    } else if(newcell.id == 'player1' && moverow >5 && pieces[moverow][movecol] == "銀") {
+        if(confirm("成りますか?") == true) {
+        pieces[moverow][movecol] = "全";
+        }
+    } else if(newcell.id == 'player1' && moverow >5 && pieces[moverow][movecol] == "香") {
+        if(confirm("成りますか?") == true) {
+        pieces[moverow][movecol] = "杏";
+        }
+    } else if(newcell.id == 'player1' && moverow >5 && pieces[moverow][movecol] == "桂") {
+        if(confirm("成りますか?") == true) {
+        pieces[moverow][movecol] = "圭";
+        }
+    } else if(newcell.id == 'player1' && moverow >5 && pieces[moverow][movecol] == "角") {
+        if(confirm("成りますか?") == true) {
+        pieces[moverow][movecol] = "馬";
+        }
+    } else if(newcell.id == 'player1' && moverow >5 && pieces[moverow][movecol] == "飛") {
+        if(confirm("成りますか?") == true) {
+        pieces[moverow][movecol] = "龍";
+        }
+    } else if(newcell.id == 'player1' && selectrow >5 && pieces[moverow][movecol] == "歩") {
+        if(confirm("成りますか?") == true) {
+        pieces[moverow][movecol] = "と";
+        }
+    } else if(newcell.id == 'player1' && selectrow >5 && pieces[moverow][movecol] == "銀") {
+        if(confirm("成りますか?") == true) {
+        pieces[moverow][movecol] = "全";
+        }
+    } else if(newcell.id == 'player1' && selectrow >5 && pieces[moverow][movecol] == "香") {
+        if(confirm("成りますか?") == true) {
+        pieces[moverow][movecol] = "杏";
+        }
+    } else if(newcell.id == 'player1' && selectrow >5 && pieces[moverow][movecol] == "桂") {
+        if(confirm("成りますか?") == true) {
+        pieces[moverow][movecol] = "圭";
+        }
+    } else if(newcell.id == 'player1' && selectrow >5 && pieces[moverow][movecol] == "角") {
+        if(confirm("成りますか?") == true) {
+        pieces[moverow][movecol] = "馬";
+        }
+    } else if(newcell.id == 'player1' && selectrow >5 && pieces[moverow][movecol] == "飛") {
+        if(confirm("成りますか?") == true) {
+        pieces[moverow][movecol] = "龍";
+        }
+    }
 
     //駒を描画
     piecerender();
@@ -259,6 +370,10 @@ function movepiece(moverow, movecol) {
     }
     socket.emit('pieces', {pieces:pieces, mine:mypieces, yours: opponent_pieces, myId: myqueryId, oppoId: oppoqueryId, boardId: queryId});
     
+}
+
+function matta () {
+    socket.emit('stock');
 }
 
 function catchpiece(newcell, oldcell) {
