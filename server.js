@@ -20,6 +20,11 @@ let yb=0;
 let yt =0;
 let nb = 0;
 let nt = 0;
+let resetyes =0;
+let resetno = 0;
+let players = [];
+let turn = 0;
+
 
 // 静的ファイルを提供
 app.use(express.static('public'));
@@ -33,9 +38,6 @@ app.get('/', (req, res) => {
     res.render('index.ejs');
 });
 
-let players = [];
-let turn = 0;
-
 // Socket.IOの接続処理
 io.on('connection', (socket) => {
     console.log('ユーザーが接続しました');
@@ -48,8 +50,6 @@ io.on('connection', (socket) => {
         players[0].emit('playnumber', 0);
         players[1].emit('playnumber', 1);
         if(savepieces.length > 1) {
-            console.log(savepieces.length);
-            console.log(savepieces);
             io.emit('receve', {pieces:savepieces[save], mine:savemypieces[save], yours: saveopponent_pieces[save], myId: savemyId[save], oppoId: saveoopoId[save], boardId: savequeryId[save]});
             players[turn].emit('turn');
             players[(turn + 1) % 2].emit('notturn');
@@ -66,10 +66,12 @@ socket.on('pieces', (data) => {
     savequeryId[save] = data.boardId
     saveoopoId[save] = data.oppoId;
     savemyId[save] = data.myId;
-    console.log("stock",save);
-    console.log(savepieces[save]);
     
     turn = (turn + 1) % 2;
+    resetno = 0;
+    nb = 0;
+    nt = 0;
+    console.log(turn);
     players[turn].emit('turn');
     players[(turn + 1) % 2].emit('notturn');
 });
@@ -89,7 +91,6 @@ socket.on('switchB', (data) => {
         yb=0;
     } else if(nb > 0) {
         yb = 0;
-        nb = 0;
     }
 });
 
@@ -109,7 +110,6 @@ socket.on('switchT', (data) => {
         yt=0;
     } else if(nt > 0) {
         yt = 0;
-        nt = 0;
     }
 });
 
@@ -129,18 +129,50 @@ socket.on('stock', () => {
         console.log('ユーザーが切断しました');
         io.emit('rere');
         players = players.filter((playerSocket) => playerSocket.id !== socket.id);
-        if(players.length == 0) {
-        savepieces = [[[]]];
-        savemypieces = [[]];
-        saveopponent_pieces = [[]];
-        savequeryId = [[]];
-        savemyId = [[]];
-        saveoopoId = [[]];
-        save = -1;
-        connect =0;
-        }
     });
+
+    socket.on('nakatugi', () => {
+        io.emit('reset');
+        console.log("nakatugi");
+    });
+
+    socket.on('reset', (data) => {
+        if(data == true) {
+            resetyes++;
+        } else if(data == false) {
+            resetno++;
+        }
+        if(resetyes == 2) {
+            savepieces = [[[]]];
+            savemypieces = [[]];
+            saveopponent_pieces = [[]];
+            savequeryId = [[]];
+            savemyId = [[]];
+            saveoopoId = [[]];
+            save = -1;
+            yb=0;
+            yt =0;
+            nb = 0;
+            nt = 0;
+            resetyes =0;
+            resetno = 0;
+            connect  = 1;
+            turn = 0;
+        io.emit('reload');
+        } else if(resetno > 0){
+            resetyes = 0;
+        }
 });
+
+socket.on('winlose', () => {
+    console.log("winlose");
+    socket.emit('win');
+    socket.broadcast.emit('lose');
+});
+
+});
+
+
 
 // サーバーを指定したポートで起動
 const PORT = process.env.PORT || 3000;

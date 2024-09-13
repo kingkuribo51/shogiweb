@@ -8,7 +8,9 @@
     <script src="/socket.io/socket.io.js"></script><!--socket.io読み込み-->
 </head>
 <body>
-<h1>ブラジー将棋</h1>
+<div class="winlose"></div>
+<h2>ブラジー将棋</h2>
+<button class="button"  onclick="reset()">リセット</button>
  <div id="game-container">
  <table id="coughtpieces">
      <% for(let or = 0; or < 4; or++) { %>

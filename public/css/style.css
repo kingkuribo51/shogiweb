@@ -27,7 +27,7 @@ table {
     height: 40px;
     display: block;
     text-decoration: none;
-    color: black;
+    
 }
 
 #player1 {
@@ -131,4 +131,20 @@ table {
         margin: 20px 0px;
     }
     
+}
+
+.button {
+    background-color: #007bff; /* ボタンの背景色 */
+    color: white; /* ボタンのテキスト色 */
+    padding: 10px 20px; /* ボタンのパディング */
+    font-size: 16px; /* テキストのサイズ */
+    border: none; /* ボタンの境界線を削除 */
+    border-radius: 5px; /* ボタンの角を丸くする */
+    cursor: pointer; /* マウスホバー時のカーソルを変更 */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* ホバー時のエフェクト */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* ボタンに影を追加 */
+}
+
+.winlose {
+    font-size: 30px;
 }

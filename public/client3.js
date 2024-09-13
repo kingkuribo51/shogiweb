@@ -13,8 +13,11 @@ let pieces = [];
 let mypieces = [];
 let opponent_pieces = [];
 let connect;
+let winlose;
+let win = 0;
+let lose = 0;
 function gamereset() {
-    first = 0;
+    first =1;
 
 pieces = [
     ['香', '桂', '銀', '金', '王', '金', '銀', '桂', '香'],
@@ -32,8 +35,19 @@ opponent_pieces = [];
 piecerender();
 mypiecesrender();
 conditionswitchTo0();
+first = 0;
 }
 
+socket.on('reset', () => {
+    let re = confirm("リセットしますか?");
+    console.log("reset");
+    socket.emit('reset', (re));
+});
+
+function reset() {
+    console.log("nakatugi");
+    socket.emit('nakatugi');
+}
 
 //socket処理
 socket.on('start', () => {
@@ -41,12 +55,18 @@ socket.on('start', () => {
     gamereset();
 });
 
+socket.on('reload', () => {
+    window.location.reload();
+});
+
+
 socket.on('rere', () =>{
     alert("相手が切断しました");
 });
 
 socket.on('playnumber', (playnumber) => {
     console.log("receve");
+    console.log(playnumber);
     management = playnumber;
     if(management ==0) {
     links = document.querySelectorAll(`#player${management}`);
@@ -110,6 +130,16 @@ socket.on('disconnected', () => {
     location.reload();
 });
 
+socket.on('win', () => {
+    console.log("win");
+    win = 1;
+});
+
+socket.on('lose', () => {
+    console.log("lose");
+   lose = 1;
+});
+
 socket.on('haveC', (data) => {
     let send = confirm(`${data.name}を変更しますか？`);
     if(send == true && data.function == 'boardswitch') {
@@ -133,30 +163,71 @@ function turnswitch() {
 
 //駒を描画する
 function piecerender() {
+    if(win == 1) {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                cell.id = `player${management}`;
+               pieces[row][col] = "勝";
+            }
+        }
+    } else if(lose == 1) {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                cell.id = `player${management}`;
+               pieces[row][col] = "負";
+            }
+        }
+    }
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
             const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
             cell.textContent = pieces[row][col];
+            if(cell.textContent == "馬" || cell.textContent == "龍" || cell.textContent == "と" || cell.textContent == "全" || cell.textContent == "杏" || cell.textContent == "圭") {
+                cell.style.color = "red";
+            } else {
+                cell.style.color = "black";
+            }
             
             //初期に自駒と相手駒を認識
-            if(row >=6 && cell.textContent != "" && first == 0) {
+            if(first == 1) {
+                console.log("firststake");
+            if(row >=6 && cell.textContent != "") {
             cell.id = 'player0'; //player1の駒
-            } else if(row <=2 && cell.textContent != "" && first == 0) {
+            } else if(row <=2 && cell.textContent != "" ) {
                 cell.id = 'player1';//player2の駒
-            }  else if(cell.textContent == "" && first == 0) {
+            }  else if(cell.textContent == "" ) {
                 cell.id = 'void';//空白地帯
             }
         }
+        }
     }
-    first =1;
 }
 
 //持ち駒描画
 function mypiecesrender() {
     for(let catchid = 0; catchid < 20; catchid++) {
         const opponentcatchcell = document.querySelector(`[data-opponentid="${catchid}"]`);
+        if(win == 1) {
+            for(let i = 0; i < 20; i++) {
+               opponent_pieces[i] = "勝";
+            }
+        } else if(lose == 1) {
+            for(let i = 0; i < 20; i++) {
+                opponent_pieces[i] = "負";
+             }
+        }
         opponentcatchcell.textContent = opponent_pieces[catchid];
         const mycatchcell = document.querySelector(`[data-myid="${catchid}"]`);
+        if(win == 1) {
+            for(let i = 0; i < 20; i++) {
+               mypieces[i] = "勝";
+            }
+        } else if(lose == 1) {
+            for(let i = 0; i < 20; i++) {
+                mypieces[i] = "負";
+             }
+        }
         mycatchcell.textContent = mypieces[catchid];
     }
 }
@@ -181,6 +252,7 @@ function piececlick(row,col) {
         
 
         checkmoving(row, col, cell.textContent, cell.id);
+       
 
         //condotion1へ
         conditionswitchTo1(row, col);
@@ -211,10 +283,17 @@ function piececlick(row,col) {
     } else if(condition == 2 && pieces[row][col] == "") {
          //2歩検索
          let nihucount = 0;
+         
          let nihu = document.querySelectorAll(`[data-col="${col}"]`);
          for(let i = 0; i<9; i++) {
-             if(selectid == nihu[i].id && pieces[i][col] == "歩") {
+            if(management == 0) {
+             if(mypieces[selecthaving] == "歩" && selectid == nihu[i].id && pieces[i][col] == "歩") {
                  nihucount++;
+             }
+         } else if(management == 1) {
+            if(opponent_pieces[selecthaving] == "歩" && selectid == nihu[i].id && pieces[i][col] == "歩") {
+                nihucount++;
+            }
          }
          
         }
@@ -377,6 +456,10 @@ function matta () {
 }
 
 function catchpiece(newcell, oldcell) {
+    if(newcell.textContent == "王") {
+        socket.emit('winlose');
+    }
+    
     //駒を取ったら持ち駒へ
     if(newcell.textContent =="と") {
         newcell.textContent = "歩";
