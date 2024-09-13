@@ -49,6 +49,8 @@ io.on('connection', (socket) => {
         }
         players[0].emit('playnumber', 0);
         players[1].emit('playnumber', 1);
+        players[turn].emit('turn');
+        players[(turn + 1) % 2].emit('notturn');
         if(savepieces.length > 1) {
             io.emit('receve', {pieces:savepieces[save], mine:savemypieces[save], yours: saveopponent_pieces[save], myId: savemyId[save], oppoId: saveoopoId[save], boardId: savequeryId[save]});
             players[turn].emit('turn');
