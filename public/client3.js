@@ -68,13 +68,11 @@ socket.on('playnumber', (playnumber) => {
     console.log("receve");
     console.log(playnumber);
     management = playnumber;
+    playecell = document.querySelector('.player');
+    playecell.textContent = `あなたはプレイヤー${management}`;
     if(management ==0) {
-    links = document.querySelectorAll(`#player${management}`);
-    links.forEach(link => {
-        link.style.pointerEvents = "auto";
         const cell = document.querySelector('#game-container');
         cell.style.transform = "rotate(0deg)";
-    });
 }
     if(management == 1) {
     const cell = document.querySelector('#game-container');

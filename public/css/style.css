@@ -9,7 +9,7 @@ body {
 
 table {
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin: 20px 0px;
 }
 
 #board td {
@@ -82,9 +82,14 @@ table {
     pointer-events: none;
 }
 
+#void {
+    pointer-events: none;
+}
+
 @media (max-width: 600px) {
 
     #game-container {
+        margin: 30px 0px;
         display: flex;
         flex-direction:column;
         align-items: center;
@@ -109,16 +114,16 @@ table {
     }
 
     #coughtpieces a {
-        width: 15px;
-        height: 15px;
+        width: 18px;
+        height: 18px;
         display: block;
         text-decoration: none;
         color: black;
     }
     
     #coughtpieces td {
-        width: 15px;
-        height: 15px;
+        width: 18px;
+        height: 18px;
         border: 1px solid #333;
         text-align: center;
         vertical-align: middle;
@@ -133,13 +138,36 @@ table {
     
 }
 
+.buttons {
+    flex-direction: row;
+}
+
 .button {
-    background-color: #007bff; /* ボタンの背景色 */
-    color: white; /* ボタンのテキスト色 */
+    margin: 20px 5px;
+    background-color: #57e48d; /* ボタンの背景色 */
+    color: rgb(0, 0, 0); /* ボタンのテキスト色 */
     padding: 10px 20px; /* ボタンのパディング */
-    font-size: 16px; /* テキストのサイズ */
-    border: none; /* ボタンの境界線を削除 */
-    border-radius: 5px; /* ボタンの角を丸くする */
+    font-size: 12px; /* テキストのサイズ */
+    cursor: pointer; /* マウスホバー時のカーソルを変更 */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* ホバー時のエフェクト */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* ボタンに影を追加 */
+}
+
+.mattabutton {
+    background-color: #e64cd1; /* ボタンの背景色 */
+    color: rgb(236, 217, 45); /* ボタンのテキスト色 */
+    padding: 10px 20px; /* ボタンのパディング */
+    font-size: 15px; /* テキストのサイズ */
+    cursor: pointer; /* マウスホバー時のカーソルを変更 */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* ホバー時のエフェクト */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* ボタンに影を追加 */
+}
+
+.resetbutton {
+    background-color: #e92d2d; /* ボタンの背景色 */
+    color: rgb(0, 0, 0); /* ボタンのテキスト色 */
+    padding: 10px 20px; /* ボタンのパディング */
+    font-size: 15px; /* テキストのサイズ */
     cursor: pointer; /* マウスホバー時のカーソルを変更 */
     transition: background-color 0.3s ease, transform 0.2s ease; /* ホバー時のエフェクト */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* ボタンに影を追加 */
