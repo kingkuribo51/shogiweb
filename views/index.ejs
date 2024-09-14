@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+<title>ブラジー将棋</title>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +17,7 @@
      <% for(let or = 0; or < 4; or++) { %>
             <tr>
                 <% for(let oc = 0; oc < 5; oc++) { %>
-                    <td>
+                    <td data-Topponentid="<%=5*or+oc%>">
                     <a id="player1" class="opponentpieces" data-opponentid="<%=5*or+oc%>" href="" onclick ="sasu(<%=5*or+oc%>, <%=1%>); return false;"></a>
                     </td>
                 <% } %>
@@ -29,7 +30,7 @@
          <% for(let i = 0; i < 9; i++) { %>
             <tr>
                 <% for(let j = 0; j < 9; j++) { %>
-                    <td >
+                    <td data-Trow="<%= i %>" data-Tcol="<%= j %>">
                     <a class="boardpieces" data-row="<%= i %>" data-col="<%= j %>" href="" onclick="piececlick(<%= i%>,<%= j %>); return false;"></a>
                     </td>
                 <% } %>
@@ -41,7 +42,7 @@
         <% for(let mr = 0; mr < 4; mr++) { %>
             <tr>
                 <% for(let mc = 0; mc < 5; mc++) { %>
-                    <td>
+                    <td data-Tmyid="<%=5*mr+mc%>">
                     <a id="player0" class="mypieces" data-myid="<%=5*mr+mc%>" href="" onclick ="sasu(<%=5*mr+mc%>, <%=0%>); return false;"></a>
                     </td>
                 <% } %>
@@ -51,8 +52,8 @@
         </div>
          <button class="mattabutton"  onclick="matta()">待った</button>
         <div class="buttons">
-        <button class="button" onclick="boardswitch()">盤面交代</button>
-        <button class="button" onclick="turnswitch()">ターン交代</button>
+        <button class="button B" onclick="boardswitch()">盤面交代</button>
+        <button class="button T" onclick="turnswitch()">ターン交代</button>
         </div>
     <script src="client3.js"></script> <!-- JavaScriptをリンク -->
 </body>

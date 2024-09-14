@@ -16,6 +16,8 @@ let connect;
 let winlose;
 let win = 0;
 let lose = 0;
+let movedrow;
+let movedcol;
 function gamereset() {
     first =1;
 
@@ -69,7 +71,7 @@ socket.on('playnumber', (playnumber) => {
     console.log(playnumber);
     management = playnumber;
     playecell = document.querySelector('.player');
-    playecell.textContent = `あなたはプレイヤー${management}`;
+    playecell.textContent = `あなたはプレイヤー${management + 1}`;
     if(management ==0) {
         const cell = document.querySelector('#game-container');
         cell.style.transform = "rotate(0deg)";
@@ -85,6 +87,8 @@ socket.on('turn', () => {
     links.forEach(link => {
         link.style.pointerEvents = "auto";
     });
+    const button = document.querySelector('.mattabutton');
+    button.disabled = true;
     alert("あなターンです");
 });
 
@@ -92,12 +96,24 @@ socket.on('notturn', () => {
     links = document.querySelectorAll(`#player${management}`);
     links.forEach(link => {
         link.style.pointerEvents = "none";
+        const button = document.querySelector('.mattabutton');
+    button.disabled = false;
     });
 });
 
 socket.on('receve', (data) => {
     console.log("receve");
-    
+    const Tbutton = document.querySelector('.T');
+    Tbutton.disabled = false;
+    const Bbutton = document.querySelector('.B');
+    Bbutton.disabled = false;
+    if(notcolor = document.querySelector('.selesele')) {
+    notcolor.classList.remove('selesele');
+    }
+    if (color = document.querySelector('.moved')) {
+    color.classList.remove('moved');
+    }
+
     pieces = data.pieces;
     mypieces = data.mine;
     opponent_pieces = data.yours;
@@ -116,6 +132,25 @@ socket.on('receve', (data) => {
     for(let i=0; i<data.myId.length; i++) {
         const cell = document.querySelector(`[data-myid="${i}"]`);
         cell.id=data.myId[i];
+    }
+
+    if(data.selectcatch == null) {
+    const colorcell = document.querySelector(`[data-Trow="${data.moveRow}"][data-Tcol="${data.moveCol}"]`);
+    colorcell.classList.add('moved');
+    const notcolorcell = document.querySelector(`[data-Trow="${data.selectRow}"][data-Tcol="${data.selectCol}"]`);
+    notcolorcell.classList.add('selesele');
+    } else if(data.selectcatch != null) {
+        if(data.player == 0) {
+            const Mcell = document.querySelector(`[data-Tmyid="${data.selectcatch}"]`);
+            Mcell.classList.add('selesele');
+            const colorcell2 = document.querySelector(`[data-Trow="${data.moveRow}"][data-Tcol="${data.moveCol}"]`);
+            colorcell2.classList.add('moved');
+        } else if(data.player == 1) {
+            const Ocell = document.querySelector(`[data-Topponentid="${data.selectcatch}"]`);
+            Ocell.classList.add('selesele');
+            const colorcell3 = document.querySelector(`[data-Trow="${data.moveRow}"][data-Tcol="${data.moveCol}"]`);
+            colorcell3.classList.add('moved');
+        }
     }
 
     piecerender();
@@ -151,6 +186,16 @@ socket.on('haveC', (data) => {
     }
 });
 
+socket.on('Tdisabled', () => { 
+    const button = document.querySelector('.T')
+    button.disabled = true;
+});
+
+socket.on('Bdisabled', () => {
+    const button = document.querySelector('.B')
+    button.disabled = true;
+});
+
 function boardswitch() {
     socket.emit('boardswitch', ("盤面"));
 }
@@ -158,6 +203,7 @@ function boardswitch() {
 function turnswitch() {
     socket.emit('turnswitch', ("ターン"));
 }
+
 
 //駒を描画する
 function piecerender() {
@@ -311,7 +357,8 @@ function piececlick(row,col) {
 //駒を動かす
 function movepiece(moverow, movecol) {
     //待った用に前の状態を保存
-   
+   movedrow = moverow;
+   movedcol = movecol;
     
 
     //駒情報を取得
@@ -445,7 +492,7 @@ function movepiece(moverow, movecol) {
     for(i=0; i<query.length; i++) {
         queryId[i] = query[i].id;
     }
-    socket.emit('pieces', {pieces:pieces, mine:mypieces, yours: opponent_pieces, myId: myqueryId, oppoId: oppoqueryId, boardId: queryId});
+    socket.emit('pieces', {pieces:pieces, mine:mypieces, yours: opponent_pieces, myId: myqueryId, oppoId: oppoqueryId, boardId: queryId, player: management, selectRow: selectrow, selectCol: selectcol, moveRow: movedrow, moveCol: movedcol});
     
 }
 
@@ -512,6 +559,8 @@ function sasu(dataId, player) {
 
 //指し駒を指す
 function sasimove(row, col) {
+    movedrow = row;
+    movedcol = col;
     const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
 
     if(selectid == 'player0') {
@@ -541,7 +590,8 @@ function sasimove(row, col) {
     for(i=0; i<query.length; i++) {
         queryId[i] = query[i].id;
     }
-    socket.emit('pieces', {pieces:pieces, mine:mypieces, yours: opponent_pieces, myId: myqueryId, oppoId: oppoqueryId, boardId: queryId});
+    
+    socket.emit('sasipieces', {pieces:pieces, mine:mypieces, yours: opponent_pieces, myId: myqueryId, oppoId: oppoqueryId, boardId: queryId, player: management, selectcatch: selecthaving, moveRow: movedrow, moveCol: movedcol});
 }
 
 //contiditionを1待機状態

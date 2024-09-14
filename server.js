@@ -24,6 +24,12 @@ let resetyes =0;
 let resetno = 0;
 let players = [];
 let turn = 0;
+let saveselectRow = [];
+let saveselectCol = [];
+let savemoveRow = [];
+let savemovetCol = [];
+let saveplayer = [];
+let saveselectcatch = [];
 
 
 // 静的ファイルを提供
@@ -52,7 +58,7 @@ io.on('connection', (socket) => {
         players[turn].emit('turn');
         players[(turn + 1) % 2].emit('notturn');
         if(savepieces.length > 1) {
-            io.emit('receve', {pieces:savepieces[save], mine:savemypieces[save], yours: saveopponent_pieces[save], myId: savemyId[save], oppoId: saveoopoId[save], boardId: savequeryId[save]});
+            io.emit('receve', {pieces:savepieces[save], mine:savemypieces[save], yours: saveopponent_pieces[save], myId: savemyId[save], oppoId: saveoopoId[save], boardId: savequeryId[save], player: saveplayer[save], selectcatch: saveselectcatch[save],selectRow: saveselectRow[save], selectCol: saveselectCol[save], moveRow: savemoveRow[save], moveCol: savemovetCol[save]});
             players[turn].emit('turn');
             players[(turn + 1) % 2].emit('notturn');
         }
@@ -68,6 +74,37 @@ socket.on('pieces', (data) => {
     savequeryId[save] = data.boardId
     saveoopoId[save] = data.oppoId;
     savemyId[save] = data.myId;
+    saveselectRow[save] = data.selectRow;
+    saveselectCol[save] = data.selectCol;
+    savemoveRow[save] = data.moveRow;
+    savemovetCol[save] = data.moveCol;
+    saveplayer[save] = data.player;
+    saveselectcatch[save] = null;
+    
+    turn = (turn + 1) % 2;
+    resetno = 0;
+    nb = 0;
+    nt = 0;
+    console.log(turn);
+    players[turn].emit('turn');
+    players[(turn + 1) % 2].emit('notturn');
+});
+
+socket.on('sasipieces', (data) => {
+    save++;
+    io.emit('receve', (data));
+    savepieces[save] = data.pieces;
+    savemypieces[save] = data.mine;
+    saveopponent_pieces[save] = data.yours;
+    savequeryId[save] = data.boardId
+    saveoopoId[save] = data.oppoId;
+    savemyId[save] = data.myId;
+    saveselectRow[save] = null;
+    saveselectCol[save] = null;
+    savemoveRow[save] = data.moveRow;
+    savemovetCol[save] = data.moveCol;
+    saveplayer[save] = data.player;
+    saveselectcatch[save] = data.selectcatch;
     
     turn = (turn + 1) % 2;
     resetno = 0;
@@ -93,6 +130,7 @@ socket.on('switchB', (data) => {
         yb=0;
     } else if(nb > 0) {
         yb = 0;
+        io.emit('Bdisabled');
     }
 });
 
@@ -112,13 +150,14 @@ socket.on('switchT', (data) => {
         yt=0;
     } else if(nt > 0) {
         yt = 0;
+        io.emit('Tdisabled');
     }
 });
 
 socket.on('stock', () => {
     if(save > 0) {
     save--;
-    io.emit('receve', {pieces:savepieces[save], mine:savemypieces[save], yours: saveopponent_pieces[save], myId: savemyId[save], oppoId: saveoopoId[save], boardId: savequeryId[save]});
+    io.emit('receve', {pieces:savepieces[save], mine:savemypieces[save], yours: saveopponent_pieces[save], myId: savemyId[save], oppoId: saveoopoId[save], boardId: savequeryId[save], player: saveplayer[save], selectcatch: saveselectcatch[save],selectRow: saveselectRow[save], selectCol: saveselectCol[save], moveRow: savemoveRow[save], moveCol: savemovetCol[save]});
     turn = (turn + 1) % 2;
     players[turn].emit('turn');
     players[(turn + 1) % 2].emit('notturn');
@@ -151,6 +190,10 @@ socket.on('stock', () => {
             savequeryId = [[]];
             savemyId = [[]];
             saveoopoId = [[]];
+            saveselectRow = [];
+            saveselectCol = [];
+            savemoveRow = [];
+            savemovetCol = [];
             save = -1;
             yb=0;
             yt =0;

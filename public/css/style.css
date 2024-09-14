@@ -12,6 +12,10 @@ table {
     margin: 20px 0px;
 }
 
+#board {
+    background-color: rgb(219, 163, 78);
+}
+
 #board td {
     width: 40px;
     height: 40px;
@@ -19,7 +23,6 @@ table {
     text-align: center;
     vertical-align: middle;
     font-size: 24px;
-    background-color: rgb(219, 163, 78);
 }
 
 #board td a{
@@ -95,6 +98,10 @@ table {
         align-items: center;
     }
     
+    #board {
+        background-color: rgb(219, 163, 78);
+    }
+
     #board td {
         width: 25px;
         height: 25px;
@@ -102,7 +109,6 @@ table {
         text-align: center;
         vertical-align: middle;
         font-size: 18px;
-        background-color: rgb(219, 163, 78);
     }
     
     #board td a{
@@ -136,6 +142,14 @@ table {
         margin: 20px 0px;
     }
     
+}
+
+.moved {
+    background-color: #57e48d;
+}
+
+.selesele {
+    background-color: whitesmoke;
 }
 
 .buttons {
