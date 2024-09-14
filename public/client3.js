@@ -196,6 +196,10 @@ socket.on('Bdisabled', () => {
     button.disabled = true;
 });
 
+socket.on('full', () => {
+    alert("満員です。別のサーバーで待機してください。");
+});
+
 function boardswitch() {
     socket.emit('boardswitch', ("盤面"));
 }

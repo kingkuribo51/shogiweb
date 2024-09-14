@@ -1,5 +1,6 @@
 const express = require('express');
 const http = require('http');
+const { disconnect } = require('process');
 const socketIo = require('socket.io');
 
 // Expressのセットアップ
@@ -62,6 +63,10 @@ io.on('connection', (socket) => {
             players[turn].emit('turn');
             players[(turn + 1) % 2].emit('notturn');
         }
+    } else if(players.length > 2) {
+        socket.emit('full');
+        socket.disconnect();
+        return;
     }
 
      // 駒の移動
