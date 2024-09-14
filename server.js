@@ -48,7 +48,13 @@ app.get('/', (req, res) => {
 // Socket.IOの接続処理
 io.on('connection', (socket) => {
     console.log('ユーザーが接続しました');
+    if(players.length >= 2) {
+        socket.emit('full');
+        socket.disconnect();
+        return;
+    }
     players.push(socket);
+    console.log(players.length);
     
     if(players.length ==2) {
         if(savepieces.length == 1) {
@@ -63,10 +69,6 @@ io.on('connection', (socket) => {
             players[turn].emit('turn');
             players[(turn + 1) % 2].emit('notturn');
         }
-    } else if(players.length > 2) {
-        socket.emit('full');
-        socket.disconnect();
-        return;
     }
 
      // 駒の移動
