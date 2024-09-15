@@ -73,8 +73,8 @@ socket.on('playnumber', (playnumber) => {
     playecell = document.querySelector('.player');
     playecell.textContent = `あなたはプレイヤー${management + 1}`;
     if(management ==0) {
-        const cell = document.querySelector('#game-container');
-        cell.style.transform = "rotate(0deg)";
+    const cell = document.querySelector('#game-container');
+    cell.style.transform = "rotate(0deg)";
 }
     if(management == 1) {
     const cell = document.querySelector('#game-container');
@@ -83,7 +83,7 @@ socket.on('playnumber', (playnumber) => {
 });
 
 socket.on('turn', () => {
-    links = document.querySelectorAll(`#player${management}`);
+    const links = document.querySelectorAll(`#player${management}`);
     links.forEach(link => {
         link.style.pointerEvents = "auto";
     });
@@ -93,12 +93,12 @@ socket.on('turn', () => {
 });
 
 socket.on('notturn', () => {
-    links = document.querySelectorAll(`#player${management}`);
-    links.forEach(link => {
+        const links = document.querySelectorAll(`#player${management}`);
+        links.forEach(link => {
         link.style.pointerEvents = "none";
-        const button = document.querySelector('.mattabutton');
-    button.disabled = false;
     });
+    const button = document.querySelector('.mattabutton');
+    button.disabled = false;
 });
 
 socket.on('receve', (data) => {

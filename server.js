@@ -9,6 +9,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 //状態保存
+let change = 0;
 let savepieces = [[[]]];
 let savemypieces = [[]];
 let saveopponent_pieces = [[]];
@@ -132,8 +133,12 @@ socket.on('switchB', (data) => {
         nb++;
     }
     if(yb == 2) {
-        players[1].emit('playnumber', 0);
-        players[0].emit('playnumber', 1);
+        players[(change+1)%2].emit('playnumber', 0);
+        players[change].emit('playnumber', 1);
+        change = (change + 1) % 2;
+        players[turn].emit('turn');
+    players[(turn + 1) % 2].emit('notturn');
+        io.emit('change');
         yb=0;
     } else if(nb > 0) {
         yb = 0;
@@ -210,6 +215,7 @@ socket.on('stock', () => {
             resetno = 0;
             connect  = 1;
             turn = 0;
+            change = 0;
         io.emit('reload');
         } else if(resetno > 0){
             resetyes = 0;
